@@ -18,5 +18,4 @@ spotify-recommender/
 │   └── README.md
 └── database/
     └── schema.sql
-
- ```
+```
