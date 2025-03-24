@@ -1,5 +1,15 @@
 # Music Recommendations
 
+### 🛠️ Tech Stack
+
+- **Frontend**: React
+- **Backend**: Python with Flask
+- **Database**: PostgreSQL
+- **Auth**: Spotify OAuth 2.0
+- **APIs**: Spotify Web API
+
+
+
 ```
 spotify-recommender/
 ├── backend/
