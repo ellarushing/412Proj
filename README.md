@@ -13,6 +13,8 @@
 - **U** : Update user preferences or ratings
 - **D** : Remove a song from recommendations
 
+- **Complex Query 1** : Recursive query to fetch all related artists
+- **Complex Query 2**: A query using window functions to rank songs by similarity score or frequency
 
 ```
 spotify-recommender/
