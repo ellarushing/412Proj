@@ -1,4 +1,4 @@
-# 412Proj
+# Music Recommendations
 
 ```
 spotify-recommender/
