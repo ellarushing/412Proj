@@ -8,6 +8,10 @@
 - **Auth**: Spotify OAuth 2.0
 - **APIs**: Spotify Web API
 
+- **C** : Add a new playlist or song rating; R: Get user playlists or recommendations;
+- **R** : Get user playlists or recommendations
+- **U** : Update user preferences or ratings
+- **D** : Remove a song from recommendations
 
 
 ```
