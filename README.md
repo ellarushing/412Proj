@@ -3,7 +3,7 @@
 ### 🛠️ Tech Stack
 
 - **Frontend**: React
-- **Backend**: Python with Flask
+- **Backend**: Go with GORM
 - **Database**: PostgreSQL
 - **Auth**: Spotify OAuth 2.0
 - **APIs**: Spotify Web API
