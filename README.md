@@ -3,7 +3,7 @@
 ### 🛠️ Tech Stack
 
 - **Frontend**: React
-- **Backend**: Python with Flask
+- **Backend**: Go + GORM
 - **Database**: PostgreSQL
 - **Auth**: Spotify OAuth 2.0
 - **APIs**: Spotify Web API
@@ -19,28 +19,29 @@
 ```
 spotify-recommender/
 ├── backend/
-│   ├── app/
-│   │   ├── models/
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py
-│   │   │   ├── song.py
-│   │   │   ├── artist.py
-│   │   │   ├── playlist.py
-│   │   │   └── similarity.py
-│   │   ├── routes/
-│   │   │   ├── __init__.py
-│   │   │   ├── main.py
-│   │   │   ├── auth.py
-│   │   │   ├── spotify.py
-│   │   │   └── recommendations.py
-│   │   ├── services/
-│   │   │   ├── __init__.py
-│   │   │   ├── spotify_service.py
-│   │   │   └── recommendation_service.py
-│   │   └── __init__.py
-│   ├── config.py
-│   ├── requirements.txt
-│   └── run.py
+│   ├── controllers/
+        ├── auth_controller.go
+        ├── spotify_controller.go
+        ├── recommendations_controller.go
+│   ├── models/
+│   │   ├── user.go
+│   │   ├── song.go
+│   │   ├── artist.go
+│   │   ├── playlist.go
+│   │   ├── similarity.go
+│   │   └── playlist_song.go
+│   ├── routes/
+│   │   └── routes.go
+│   ├── services/
+│   │   ├── spotify.go
+│   │   └── recommendation.go
+│   ├── database/
+│   │   └── connect.go
+│   ├── config/
+│   │   └── config.go
+│   ├── go.mod
+│   ├── go.sum
+│   └── main.go
 ├── frontend/
 │   ├── public/
 │   │   ├── index.html
