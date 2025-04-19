@@ -5,19 +5,20 @@ auth_routes.py will handle the login and OAuth with Spotify
 from flask import Blueprint, redirect, request, session
 import requests
 import urllib.parse
-from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
+import config
 
 auth_bp = Blueprint('auth', __name__)
 
 # /login route
+# this works 4/19 commit
 @auth_bp.route('/login')
 def login():
     # creates a dictionary
     scope = "user-read-private user-read-email playlist-read-private"
     params = {
-        "client_id": SPOTIFY_CLIENT_ID,
+        "client_id": config.SPOTIFY_CLIENT_ID,
         "response_type": "code", # this tells Spotify I need the auth code
-        "redirect_uri" : SPOTIFY_REDIRECT_URI,
+        "redirect_uri" : config.SPOTIFY_REDIRECT_URI,
         "scope": scope
     }
     # need to construct the URL -> use urllib.parse.urlencode
@@ -29,8 +30,42 @@ def login():
 
 
 
-
-# /callback route
+# /callback route, exchange code for access token
+# refer here: https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 @auth_bp.route('/callback')
 def callback():
-    pass
+    # post request to /api/token
+    token_url = "https://accounts.spotify.com/api/token"
+    # grab and save code here
+    code = request.args.get('code')
+    payload = {
+        "grant_type": "authorization_code",
+        "code": code, # this is gathered from previous code
+        "redirect_uri": config.SPOTIFY_REDIRECT_URI,
+        # less secure but for the project scope, easier to do then base64 encoding in headers
+        "client_id": config.SPOTIFY_CLIENT_ID,
+        "client_secret": config.SPOTIFY_CLIENT_SECRET
+    }
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    # send the request via post
+    response = requests.post(token_url, data=payload, headers=headers)
+    # spotify returns a json data
+    token_info = response.json()
+
+    # access_token and refresh_token is a string, save in a variable
+    access_token = token_info.get('access_token')
+    refresh_token = token_info.get('refresh_token')
+
+    # use flask session to store user-specific data (ie cookies)
+    # https://www.geeksforgeeks.org/how-to-use-flask-session-in-python-flask/
+    session['access_token'] = access_token
+    session['refresh_token'] = refresh_token
+
+    return "Login Successful on callback endpoint"
+
+
+
+
