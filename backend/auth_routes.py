@@ -7,6 +7,8 @@ import requests
 import urllib.parse
 import config
 
+from spotify_services import get_user_profile
+
 auth_bp = Blueprint('auth', __name__)
 
 # /login route
@@ -27,7 +29,6 @@ def login():
     # 'https://accounts.spotify.com/authorize?' taken from Spotify forDevelopers
     url = 'https://accounts.spotify.com/authorize?' + query_string
     return redirect(url)
-
 
 
 # /callback route, exchange code for access token
@@ -66,6 +67,14 @@ def callback():
 
     return "Login Successful on callback endpoint"
 
-
-
+@auth_bp.route('/me')
+def me():
+    access_token = session.get('access_token')
+    # if we don't have an access token, redirect user to login to get token
+    if not access_token:
+        return redirect('/auth/login')
+    
+    # use spotify_services.py get_user_profile function
+    profile_data = get_user_profile(access_token)
+    return profile_data
 
