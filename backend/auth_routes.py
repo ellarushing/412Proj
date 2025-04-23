@@ -116,5 +116,5 @@ def sync_playlists():
         db.db.session.merge(playlist)
     db.db.session.commit()
 
-    return {"message": "Playlist"}
+    return {"message": "Playlist Syncing Success"}
 
