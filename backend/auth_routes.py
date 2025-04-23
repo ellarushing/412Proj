@@ -7,7 +7,7 @@ import requests
 import urllib.parse
 import config
 
-from spotify_services import get_user_profile
+import spotify_services
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -75,6 +75,16 @@ def me():
         return redirect('/auth/login')
     
     # use spotify_services.py get_user_profile function
-    profile_data = get_user_profile(access_token)
+    profile_data = spotify_services.get_user_profile(access_token)
     return profile_data
 
+
+@auth_bp.route('/playlists')
+def playlists():
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+
+    profile_data = spotify_services.get_user_playlists(access_token)
+    return profile_data
+    
