@@ -10,6 +10,7 @@ import config
 import spotify_services
 
 auth_bp = Blueprint('auth', __name__)
+import db
 
 # /login route
 # this works 4/19 commit
@@ -88,3 +89,32 @@ def playlists():
     profile_data = spotify_services.get_user_playlists(access_token)
     return profile_data
     
+
+'''
+For database
+'''
+
+@auth_bp.route('/sync_playlists')
+def sync_playlists():
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+    
+    playlists_data = spotify_services.get_user_playlists(access_token)['items']
+
+    # loop through and grab all the data
+    for item in playlists_data:
+        playlist = db.Playlist(
+            id = item['id'],
+            name = item['name'],
+            owner = item['owner']['display_name'],
+            track_count = item['tracks']['total'],
+            image_url = item['images'][0]['url'] if item['images'] else None,
+            spotify_url = item['external_urls']['spotify']
+        )
+        # insert into the database
+        db.db.session.merge(playlist)
+    db.db.session.commit()
+
+    return {"message": "Playlist"}
+
