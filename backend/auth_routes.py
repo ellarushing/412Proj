@@ -91,7 +91,6 @@ def playlists():
     profile_data = spotify_services.get_user_playlists(access_token)
     return profile_data
     
-
 '''
 For database
 '''
@@ -117,8 +116,7 @@ def sync_tracks(playlist_id):
     return {"message": "Tracks Syncing Success"}
 
 
-# Query #1 - Simple
-# grabs all the playlists
+# Query #1 - Simple, grabs all the playlists
 @auth_bp.route('/playlistAll')
 def playlistAll():
     access_token = session.get('access_token')
@@ -134,8 +132,7 @@ def playlistAll():
         ]
     }
 
-# Query #2 - Simple
-# grabs all the tracks
+# Query #2 - Simple, grabs all the tracks
 @auth_bp.route('/create_vibe_playlist')
 def create_vibe_playlist():
     access_token = session.get('access_token')
@@ -177,7 +174,9 @@ def create_vibe_playlist():
             artist = track.artist,
             playlist_id = playlist_id,  # Link to new playlist
             popularity = track.popularity,
-            duration_ms = track.duration_ms
+            duration_ms = track.duration_ms,
+            album_image_url = track.album_image_url
+
         )
         db.db.session.add(new_track)
 
@@ -186,5 +185,120 @@ def create_vibe_playlist():
 
     return {"message": f"Created Vibe Playlist with {len(wanted_tracks)} tracks!"}
 
+# Query #3 - Simple, List tracks for a playlist
+@auth_bp.route('/playlist_tracks/<playlist_id>')
+def playlist_tracks(playlist_id):
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+    
+    # grab the tracks associated to the playlist
+    tracks = db.Tracks.query.filter_by(playlist_id=playlist_id).all()
 
+    return {
+        "tracks": [
+            {
+                "name" : t.name,
+                "artist" : t.artist,
+                "popularity" : t.popularity,
+                "duration_ms": t.duration_ms,
+                "album_image_url": t.album_image_url
+            }
+            for t in tracks
+        ]
+    }
 
+# Query #4 - Simple, Update playlist name
+# Can delete this, easy CRUD Operation though
+@auth_bp.route('/update_playlist_name/<playlist_id>', methods=['POST'])
+def update_playlist_name(playlist_id):
+    access_token = session.get('access_token')
+    #if not access_token:
+    #    return redirect('/auth/login')
+    # save the new name
+    new_name = request.form.get('new_name')
+    if not new_name:
+        return {"error": "New name not provided"}, 400
+    playlist = db.Playlist.query.get(playlist_id)
+    playlist.name = new_name
+    db.db.session.commit()
+
+    return {"message": f"Playlist {playlist_id} renamed to {new_name} successfully!"}
+
+# Query #5 - Simple, Delete a playlist
+@auth_bp.route('/delete_playlist/<playlist_id>')
+def delete_playlist(playlist_id):
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+    
+    # use the ID to find the playlist name
+    playlist = db.Playlist.query.get(playlist_id)
+    # delete all associating tracks
+    db.Tracks.query.filter_by(playlist_id=playlist_id).delete()
+    db.db.session.delete(playlist)
+    db.db.session.commit()
+
+# Query #6 - Simple, Search through tracks
+@auth_bp.route('/search_tracks/<search_term>')
+def search_tracks(search_term):
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+    # use ilike to make it non-cap sensitive
+    tracks = db.Tracks.query.filter(db.Tracks.name.ilike(f"%{search_term}%")).all()
+    return {
+        "matching_tracks" : [
+            {
+                "name" : t.name,
+                "artist": t.artist,
+                "popularity": t.popularity,
+                "duration_ms": t.duration_ms,
+                "album_image_url": t.album_image_url
+            }
+            for t in tracks
+        ]
+    }
+    
+# Query #7 - Complex Grab Top 5 Popular Tracks
+@auth_bp.route('/top_five')
+def top_five():
+    # uses ORDER BY
+    # Limit 5 -> aggregation + selection
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+    tracks = db.Tracks.query.order_by(db.Tracks.popularity.desc()).limit(5).all()
+    return {
+        "top_tracks" : [
+            {
+                "name" : t.name,
+                "artist" : t.artist,
+                "popularity" : t.popularity,
+                "duration_ms": t.duration_ms,
+                "album_image_url": t.album_image_url
+            }
+            for t in tracks
+        ]
+    }
+
+# Query #8 - List all long tracks
+@auth_bp.route('/long_tracks')
+def long_tracks():
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+    # set duration to over 5 minutes
+    tracks = db.Tracks.query.filter(db.Tracks.duration_ms > 300000).all()
+    return {
+        'long_tracks' : [
+            {
+                "name": t.name,
+                "artist": t.artist,
+                "popularity": t.popularity,
+                "duration_ms": t.duration_ms,
+                "album_image_url": t.album_image_url
+            }
+            for t in tracks
+        ]
+    }

@@ -8,11 +8,19 @@ http://127.0.0.1:5001/auth/login
 http://127.0.0.1:5001/auth/callback
 http://127.0.0.1:5001/auth/sync_playlists
 http://127.0.0.1:5001/auth/playlistAll
-http://127.0.0.1:5001/auth/sync_tracks/3DWk2zxuQWBNGMSreoJobW
+
+
+http://127.0.0.1:5001/auth/sync_tracks/1ONeEm52JYZ3VWJ3h0CXUd
 
 
 http://127.0.0.1:5001/auth/create_vibe_playlist
+http://127.0.0.1:5001/auth/playlist_tracks/3DWk2zxuQWBNGMSreoJobW
+http://127.0.0.1:5001/auth/long_tracks
+http://127.0.0.1:5001/auth/search_tracks/love
+http://127.0.0.1:5001/auth/top_five
 
 
-https://open.spotify.com/playlist/10brSVg418XnVE0Of7nie2?si=0928ad7b650843e2
+Need to send a post request via terminal
+
+curl -X POST -F "new_name=My New Vibe Playlist" http://127.0.0.1:5001/auth/update_playlist_name/6358d7bf
 

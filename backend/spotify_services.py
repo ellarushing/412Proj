@@ -102,6 +102,8 @@ def tracks_to_db(tracks_json, playlist_id):
         album_name = track['album']['name']
         popularity = track['popularity']
         duration_ms = track['duration_ms']
+        album_image_url = track['album']['images'][0]['url'] if track.get('album') and track['album'].get('images') else None
+
 
         new_track = db.Tracks(
             id = track_id,
@@ -109,7 +111,8 @@ def tracks_to_db(tracks_json, playlist_id):
             artist = artist_name,
             playlist_id = playlist_id, # parameter
             popularity = popularity,
-            duration_ms = duration_ms
+            duration_ms = duration_ms,
+            album_image_url=album_image_url
         )
         db.db.session.merge(new_track)
     db.db.session.commit()
