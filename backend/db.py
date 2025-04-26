@@ -25,4 +25,20 @@ class Playlist(db.Model):
         self.spotify_url = spotify_url
 
 
+class Tracks(db.Model):
+    __tablename__ = 'tracks'
 
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String, nullable = False)
+    artist = db.Column(db.String)
+    playlist_id = db.Column(db.String, db.ForeignKey('playlists.id'))
+    popularity = db.Column(db.Integer)
+    duration_ms = db.Column(db.Integer)
+
+    def __init__(self, id, name, artist, playlist_id, popularity, duration_ms):
+        self.id = id
+        self.name = name
+        self.artist = artist
+        self.playlist_id = playlist_id
+        self.popularity = popularity
+        self.duration_ms = duration_ms

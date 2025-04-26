@@ -100,8 +100,23 @@ def sync_playlists():
     if not access_token:
         return redirect('/auth/login')
     
-    playlists_data = spotify_services.get_user_playlists(access_token)['items']
+    playlists_data = spotify_services.get_user_playlists(access_token)
+    spotify_services.playlists_to_db(playlists_data)
+    return {"message": "Playlist Syncing Success"}
 
+@auth_bp.route('/sync_tracks/<playlist_id>')
+def sync_tracks(playlist_id):
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+
+    tracks_data = spotify_services.get_playlist_tracks(access_token, playlist_id)
+    spotify_services.tracks_to_db(tracks_data, playlist_id)
+    return {"message": "Tracks Syncing Success"}
+
+
+
+'''
     # loop through and grab all the data
     for item in playlists_data:
         playlist = db.Playlist(
@@ -115,6 +130,24 @@ def sync_playlists():
         # insert into the database
         db.db.session.merge(playlist)
     db.db.session.commit()
+'''
 
-    return {"message": "Playlist Syncing Success"}
+
+
+
+
+# Query #1 - Simple
+# grabs all the playlists
+@auth_bp.route('/playlistAll')
+def playlistAll():
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect('/auth/login')
+    
+    playlists = db.Playlist.query.all()
+    return {
+        # go through each item in playlist, get the name
+        "playlists": [p.name for p in playlists]
+    }
+
 
