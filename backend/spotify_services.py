@@ -39,6 +39,26 @@ def get_playlist_tracks(access_token, playlist_id):
     response.raise_for_status()
     return response.json()
 
+def get_audio_features(access_token, track_id):
+    if not access_token:
+        print("Warning: No access token provided to get_audio_features")
+        raise ValueError("No access token provided")
+    
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+    url = f"https://api.spotify.com/v1/audio-features/{track_id}"
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+            print(f"Error {response.status_code} for track {track_id}: {response.text}")
+
+
+    response.raise_for_status()
+    return response.json()
+
+
 
 '''
 For Database
@@ -72,6 +92,8 @@ def playlists_to_db(playlists_json):
         
 
 def tracks_to_db(tracks_json, playlist_id):
+    from uuid import uuid4
+
     for track in tracks_json['items']:
         track = track['track']
         track_id = track['id']
