@@ -34,11 +34,14 @@ class Tracks(db.Model):
     playlist_id = db.Column(db.String, db.ForeignKey('playlists.id'))
     popularity = db.Column(db.Integer)
     duration_ms = db.Column(db.Integer)
+    album_image_url = db.Column(db.String)
 
-    def __init__(self, id, name, artist, playlist_id, popularity, duration_ms):
+
+    def __init__(self, id, name, artist, playlist_id, popularity, duration_ms, album_image_url):
         self.id = id
         self.name = name
         self.artist = artist
         self.playlist_id = playlist_id
         self.popularity = popularity
         self.duration_ms = duration_ms
+        self.album_image_url = album_image_url
