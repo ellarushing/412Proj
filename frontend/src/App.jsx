@@ -313,7 +313,12 @@ export default function App() {
         return res.json()
       })
       .then(data => {
-        setSearchResults(data.matching_tracks)
+        const unique = new Map()
+        data.matching_tracks.forEach(t => {
+          const key = `${t.name}––${t.artist}`
+          if (!unique.has(key)) unique.set(key, t)
+        })
+        setSearchResults(Array.from(unique.values()))
         setMessage(`Found ${data.matching_tracks.length} tracks matching "${searchTerm}"`)
       })
       .catch(err => {
@@ -341,7 +346,12 @@ export default function App() {
         return res.json()
       })
       .then(data => {
-        setTopTracks(data.top_tracks)
+        const unique = new Map()
+        data.top_tracks.forEach(t => {
+          const key = `${t.name}––${t.artist}`
+          if (!unique.has(key)) unique.set(key, t)
+        })
+        setTopTracks(Array.from(unique.values()))
         setShowTopTracks(true)
         setMessage(`Loaded top ${data.top_tracks.length} tracks by popularity`)
       })
@@ -370,8 +380,13 @@ export default function App() {
         return res.json()
       })
       .then(data => {
-        setLongTracks(data.long_tracks)
-        setShowLongTracks(true)
+
+        const unique = new Map()
+        data.long_tracks.forEach(t => {
+          const key = `${t.name}––${t.artist}`
+          if (!unique.has(key)) unique.set(key, t)
+        })
+        setLongTracks(Array.from(unique.values()))
         setMessage(`Loaded ${data.long_tracks.length} tracks longer than 5 minutes`)
       })
       .catch(err => {
