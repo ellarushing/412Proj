@@ -68,7 +68,7 @@ def callback():
     session['access_token'] = access_token
     session['refresh_token'] = refresh_token
 
-    return "Login Successful on callback endpoint"
+    return redirect(config.FRONTEND_URL)
 
 @auth_bp.route('/me')
 def me():
