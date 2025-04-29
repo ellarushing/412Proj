@@ -387,6 +387,7 @@ export default function App() {
           if (!unique.has(key)) unique.set(key, t)
         })
         setLongTracks(Array.from(unique.values()))
+        setShowLongTracks(true);
         setMessage(`Loaded ${data.long_tracks.length} tracks longer than 5 minutes`)
       })
       .catch(err => {

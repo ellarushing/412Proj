@@ -8,6 +8,8 @@ import urllib.parse
 import config
 
 import spotify_services
+from flask import current_app as app, session, jsonify
+from requests.exceptions import HTTPError
 
 auth_bp = Blueprint('auth', __name__)
 import db
@@ -99,11 +101,25 @@ For database
 def sync_playlists():
     access_token = session.get('access_token')
     if not access_token:
-        return redirect('/auth/login')
-    
-    playlists_data = spotify_services.get_user_playlists(access_token)
+        return jsonify(error="Not authenticated"), 401
+    try:
+        playlists_data = spotify_services.get_user_playlists(access_token)
+    except HTTPError as e:
+        if e.response.status_code == 401:
+            # token expired or invalid — clear session and ask to re-login
+            session.pop('access_token', None)
+            session.pop('refresh_token', None)
+            return jsonify(error="Session expired, please log in again"), 401
+        app.logger.exception("Spotify API error")
+        return jsonify(error="Spotify API error"), 500
+
+
+
+    #playlists_data = spotify_services.get_user_playlists(access_token)
     spotify_services.playlists_to_db(playlists_data)
-    return {"message": "Playlist Syncing Success"}
+    return {"message": "Playlist Syncing Success"}, 200
+
+
 
 @auth_bp.route('/sync_tracks/<playlist_id>')
 def sync_tracks(playlist_id):
@@ -238,6 +254,7 @@ def delete_playlist(playlist_id):
     db.Tracks.query.filter_by(playlist_id=playlist_id).delete()
     db.db.session.delete(playlist)
     db.db.session.commit()
+    return {"message": "Playlist deleted successfully"}, 200
 
 # Query #6 - Simple, Search through tracks
 @auth_bp.route('/search_tracks/<search_term>')
